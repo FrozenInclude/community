@@ -1,3 +1,4 @@
+**/src/main/resources/application.yml
 HELP.md
 .gradle
 build/
@@ -7,7 +8,6 @@ build/
 
 ### STS ###
 .apt_generated
-.yml
 .classpath
 .factorypath
 .project
@@ -36,3 +36,4 @@ out/
 
 ### VS Code ###
 .vscode/
+*.yml
