@@ -39,7 +39,7 @@ public class MemberController {
 
         Member user = memberService.login(request);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 이름 또는 비밀번호");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 이메일 또는 비밀번호");
         }
 
         session.setAttribute("loginUser", user);
@@ -68,6 +68,7 @@ public class MemberController {
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
         }
+        session.invalidate();
         memberService.withDraw(loginUser.getEmail());
         return ResponseEntity.noContent().build();
     }

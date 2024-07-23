@@ -54,7 +54,8 @@ public class MemberServiceImp implements MemberService {
     @Transactional
     public void withDraw(String loginEmail) {
         Member member=memberRepository.findByEmail(loginEmail)
-                .orElseThrow(IllegalArgumentException::new);;
+                .orElseThrow(IllegalArgumentException::new);
+
         memberRepository.delete(member);
     }
 
