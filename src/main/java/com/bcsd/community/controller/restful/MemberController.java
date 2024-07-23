@@ -34,12 +34,12 @@ public class MemberController {
     ) {
         Member existingUser = (Member) session.getAttribute("loginUser");
         if (existingUser != null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Already logged in");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 로그인되어 있습니다");
         }
 
         Member user = memberService.login(request);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 사용자 이름 또는 비밀번호");
         }
 
         session.setAttribute("loginUser", user);
@@ -53,7 +53,7 @@ public class MemberController {
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
         }
         loginUser.update(request);
         MemberResponseDto response = MemberResponseDto.from(loginUser);
@@ -66,7 +66,7 @@ public class MemberController {
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
         }
         memberService.withDraw(loginUser.getEmail());
         return ResponseEntity.noContent().build();
@@ -76,7 +76,7 @@ public class MemberController {
     public ResponseEntity<?> userInfo(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
         }
         MemberResponseDto response = MemberResponseDto.from(loginUser);
         return ResponseEntity.ok(response);
