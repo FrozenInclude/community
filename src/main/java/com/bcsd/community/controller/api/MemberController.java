@@ -1,4 +1,4 @@
-package com.bcsd.community.controller.restful;
+package com.bcsd.community.controller.api;
 
 import com.bcsd.community.controller.dto.request.MemberLoginRequestDto;
 import com.bcsd.community.controller.dto.request.MemberRegisterRequestDto;
