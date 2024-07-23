@@ -3,8 +3,6 @@ package com.bcsd.community.controller.dto.request;
 import com.bcsd.community.entity.Member;
 import com.bcsd.community.util.PasswordUtils;
 import jakarta.validation.constraints.*;
-
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 public record MemberRegisterRequestDto(

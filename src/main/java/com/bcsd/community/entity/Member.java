@@ -1,8 +1,10 @@
 package com.bcsd.community.entity;
 
 import com.bcsd.community.controller.dto.request.MemberUpdateRequestDto;
+import com.bcsd.community.util.PasswordUtils;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,11 +36,9 @@ public class Member {
         if (dto.username() != null) {
             this.username = dto.username();
         }
-        if (dto.email() != null) {
-            this.email = dto.email();
-        }
         if (dto.password() != null) {
-            this.password = dto.password();
+            salt = PasswordUtils.generateSalt();
+            this.password = PasswordUtils.hashPasswordWithSalt(dto.password(), salt);
         }
         this.updatedAt = LocalDateTime.now();
     }
