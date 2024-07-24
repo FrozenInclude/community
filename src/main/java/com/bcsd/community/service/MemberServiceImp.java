@@ -6,10 +6,12 @@ import com.bcsd.community.controller.dto.request.MemberUpdateRequestDto;
 import com.bcsd.community.controller.dto.response.MemberResponseDto;
 import com.bcsd.community.entity.Member;
 import com.bcsd.community.repository.MemberRepository;
+import com.bcsd.community.service.exception.EmailAlreadyExistsException;
 import com.bcsd.community.util.PasswordUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -38,6 +40,10 @@ public class MemberServiceImp implements MemberService {
     @Override
     @Transactional
     public MemberResponseDto register(MemberRegisterRequestDto request) {
+        memberRepository.findByEmail(request.email())
+                .ifPresent(email -> {
+                    throw new EmailAlreadyExistsException("email");
+                });
         Member member = memberRepository.save(request.toEntity());
         return MemberResponseDto.from(member);
     }
@@ -53,7 +59,7 @@ public class MemberServiceImp implements MemberService {
     @Override
     @Transactional
     public void withDraw(String loginEmail) {
-        Member member=memberRepository.findByEmail(loginEmail)
+        Member member = memberRepository.findByEmail(loginEmail)
                 .orElseThrow(IllegalArgumentException::new);
 
         memberRepository.delete(member);

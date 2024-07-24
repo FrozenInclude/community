@@ -68,12 +68,11 @@ public class MemberController {
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
         }
-        session.invalidate();
         memberService.withDraw(loginUser.getEmail());
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/info")
+    @GetMapping
     public ResponseEntity<?> userInfo(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
         if (loginUser == null) {

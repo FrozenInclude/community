@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 정보</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px; /* 버튼 사이의 간격 */
+        }
+
+
+        button {
+            background-color: #3897f0;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #357ae8;
+        }
+
+        .error {
+            color: red;
+        }
+
+        a {
+            color: #3897f0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>회원 정보</h2>
+
+    <p><strong>이름:</strong> <span th:text="${username}"></span></p>
+    <p><strong>이메일:</strong> <span th:text="${email}"></span></p>
+    <p><strong>회원가입일:</strong> <span th:text="${joinDate}"></span></p>
+
+    <div class="button-group">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">로그아웃</button>
+        </form>
+
+        <form id="deleteAccountForm" th:action="@{/delete}" method="post">
+            <button type="button" onclick="confirmDelete()">회원탈퇴</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function confirmDelete() {
+        if (confirm("정말로 회원탈퇴를 하시겠습니까?")) {
+            document.getElementById('deleteAccountForm').submit();
+        }
+    }
+</script>
+</body>
+</html>
