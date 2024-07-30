@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Builder
@@ -28,7 +29,8 @@ public class Board {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    private String salt;
+    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Article> articles;
 
     public void update(BoardUpdateRequestDto dto) {
         if (dto.board_name()!= null) {
