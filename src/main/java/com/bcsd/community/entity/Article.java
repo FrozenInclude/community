@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Builder
@@ -35,6 +36,9 @@ public class Article {
     @ManyToOne
     @JoinColumn(name="member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "classArticle",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
     public void update(ArticleUpdateRequestDto dto) {
         if (dto.title()!= null) {

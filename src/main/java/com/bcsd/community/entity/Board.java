@@ -32,6 +32,10 @@ public class Board {
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles;
 
+    @ManyToOne
+    @JoinColumn(name="member_id")
+    private Member author;
+
     public void update(BoardUpdateRequestDto dto) {
         if (dto.board_name()!= null) {
             this.board_name = dto.board_name();

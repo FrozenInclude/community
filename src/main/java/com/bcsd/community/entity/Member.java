@@ -35,6 +35,12 @@ public class Member {
     @OneToMany(mappedBy = "member",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles;
 
+    @OneToMany(mappedBy = "author",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Board> boards;
+
+    @OneToMany(mappedBy = "commentAuthor",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
     private String salt;
 
     public void update(MemberUpdateRequestDto dto) {
