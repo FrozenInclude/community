@@ -82,5 +82,22 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/articles")
+    public ResponseEntity<?> getArticles(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
+        }
+        return ResponseEntity.ok(memberService.getArticles(loginUser.getEmail()));
+    }
+
+    @GetMapping("/boards")
+    public ResponseEntity<?> getBoards(HttpSession session) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
+        }
+        return ResponseEntity.ok(memberService.getBoards(loginUser.getEmail()));
+    }
 }
 

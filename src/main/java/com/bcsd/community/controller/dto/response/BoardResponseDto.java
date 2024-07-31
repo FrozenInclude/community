@@ -13,10 +13,11 @@ public record BoardResponseDto(
         String author,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<Article> articles
+        List<ArticleResponseDto> articles
 ) {
     public static BoardResponseDto from(Board board) {
         return new BoardResponseDto(board.getId(), board.getBoardName(), board.getDescription(),
-                board.getAuthor().getUsername(),board.getCreatedAt(), board.getUpdatedAt(),board.getArticles());
+                board.getAuthor().getUsername(),board.getCreatedAt(), board.getUpdatedAt(),
+                ArticleResponseDto.from_list(board.getArticles()));
     }
 }
