@@ -1,7 +1,7 @@
-# MemberController API 문서
+# Member API 문서
 
 ## 개요
-`MemberController`는 회원 등록, 로그인, 회원 정보 수정, 회원 탈퇴, 사용자 정보 조회를 위한 엔드포인트를 제공합니다. 이 API는 HTTP 메서드를 사용하여 회원 데이터와 상호작용합니다.
+`Member API`는 회원 등록, 로그인, 회원 정보 수정, 회원 탈퇴, 사용자 정보 조회를 위한 엔드포인트를 제공합니다. 이 API는 HTTP 메서드를 사용하여 회원 데이터와 상호작용합니다.
 
 ## 기본 URL
 `/api/member`
@@ -136,6 +136,66 @@
      "로그인되어 있지 않습니다"
      ```
 - **설명:** 로그인된 회원의 정보를 조회합니다.
+
+### 6. 게시물 조회
+- **URL:** `/api/member/articles`
+- **Method:** GET
+- **응답:**
+    - **상태 코드:** 200 OK
+    - **본문:**
+      ```json
+      [
+        {
+          "id": "number",
+          "title": "string",
+          "content": "string",
+          "author": "string",
+          "createdAt": "string",
+          "updatedAt": "string"
+        }
+      ]
+      ```
+    - **상태 코드:** 401 UNAUTHORIZED
+    - **본문:**
+      ```json
+      "로그인되어 있지 않습니다"
+      ```
+- **설명:** 로그인된 사용자의 게시물 목록을 조회합니다.
+
+### 7. 게시판 조회
+- **URL:** `/api/member/boards`
+- **Method:** GET
+- **응답:**
+    - **상태 코드:** 200 OK
+    - **본문:**
+      ```json
+      [
+        {
+          "id": "number",
+          "boardName": "string",
+          "description": "string",
+          "author": "string",
+          "createdAt": "string",
+          "updatedAt": "string",
+          "articles": [
+            {
+              "id": "number",
+              "title": "string",
+              "content": "string",
+              "author": "string",
+              "createdAt": "string",
+              "updatedAt": "string"
+            }
+          ]
+        }
+      ]
+      ```
+    - **상태 코드:** 401 UNAUTHORIZED
+    - **본문:**
+      ```json
+      "로그인되어 있지 않습니다"
+      ```
+- **설명:** 로그인된 사용자가 소속된 게시판 목록을 조회합니다.
 
 ## 참고 사항
 - 로그인 요구 엔드포인트는 "loginUser" 속성을 `HttpSession`에서 확인합니다.
