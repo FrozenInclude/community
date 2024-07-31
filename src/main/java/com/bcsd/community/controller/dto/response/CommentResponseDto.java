@@ -7,9 +7,11 @@ import java.time.LocalDateTime;
 public record CommentResponseDto(
         Long id,
         String content,
+        String author,
         LocalDateTime createdAt
 ) {
     public static CommentResponseDto from(Comment comment) {
-        return new CommentResponseDto(comment.getId(),comment.getContent(),comment.getCreatedAt());
+        return new CommentResponseDto(comment.getId(),comment.getContent(),
+                comment.getCommentAuthor().getUsername(),comment.getCreatedAt());
     }
 }

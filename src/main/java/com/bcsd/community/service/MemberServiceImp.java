@@ -9,7 +9,7 @@ import com.bcsd.community.controller.dto.response.CommentResponseDto;
 import com.bcsd.community.controller.dto.response.MemberResponseDto;
 import com.bcsd.community.entity.Member;
 import com.bcsd.community.repository.MemberRepository;
-import com.bcsd.community.service.exception.EmailAlreadyExistsException;
+import com.bcsd.community.service.exception.AlreadyExistsException;
 import com.bcsd.community.service.exception.UseremailNotFoundException;
 import com.bcsd.community.util.PasswordUtils;
 import lombok.AllArgsConstructor;
@@ -47,7 +47,7 @@ public class MemberServiceImp implements MemberService {
     public MemberResponseDto register(MemberRegisterRequestDto request) {
         memberRepository.findByEmail(request.email())
                 .ifPresent(email -> {
-                    throw new EmailAlreadyExistsException("email");
+                    throw new AlreadyExistsException("email");
                 });
         Member member = memberRepository.save(request.toEntity());
         return MemberResponseDto.from(member);

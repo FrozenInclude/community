@@ -8,12 +8,13 @@ public record ArticleResponseDto(
         Long id,
         String title,
         String content,
+        String author,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
     public static ArticleResponseDto from(Article article) {
         return new ArticleResponseDto(article.getId(), article.getTitle(),
-                article.getContent(), article.getCreatedAt(), article.getUpdatedAt());
+                article.getContent(),article.getMember().getUsername(),article.getCreatedAt(), article.getUpdatedAt());
     }
 }
 

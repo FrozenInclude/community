@@ -1,6 +1,6 @@
 package com.bcsd.community.aop;
 
-import com.bcsd.community.service.exception.EmailAlreadyExistsException;
+import com.bcsd.community.service.exception.AlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException e) {
         Map<String, String> errors = new HashMap<>();
-        if (e instanceof EmailAlreadyExistsException) {
-            errors.put(e.getMessage(), "이미 가입된 이메일 입니다.");
+        if (e instanceof AlreadyExistsException) {
+            errors.put(e.getMessage(), "이미 사용 중 입니다.");
         } else {
             errors.put("error", e.getMessage());
         }

@@ -19,7 +19,8 @@ public class Board {
     @Column(name = "board_id")
     private Long id;
 
-    private String board_name;
+    @Column(name = "board_name")
+    private String boardName;
 
     private String description;
 
@@ -37,8 +38,8 @@ public class Board {
     private Member author;
 
     public void update(BoardUpdateRequestDto dto) {
-        if (dto.board_name()!= null) {
-            this.board_name = dto.board_name();
+        if (dto.boardName()!= null) {
+            this.boardName = dto.boardName();
         }
         if (dto.description() != null) {
             this.description=dto.description();
