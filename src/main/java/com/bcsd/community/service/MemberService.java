@@ -13,5 +13,4 @@ public interface MemberService {
     Member login(MemberLoginRequestDto request);
     public MemberResponseDto edit(String loginEmail,MemberUpdateRequestDto request);
     public void withDraw(String loginEmail);
-
 }
