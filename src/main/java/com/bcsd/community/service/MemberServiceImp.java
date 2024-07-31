@@ -3,16 +3,21 @@ package com.bcsd.community.service;
 import com.bcsd.community.controller.dto.request.MemberLoginRequestDto;
 import com.bcsd.community.controller.dto.request.MemberRegisterRequestDto;
 import com.bcsd.community.controller.dto.request.MemberUpdateRequestDto;
+import com.bcsd.community.controller.dto.response.ArticleResponseDto;
+import com.bcsd.community.controller.dto.response.BoardResponseDto;
+import com.bcsd.community.controller.dto.response.CommentResponseDto;
 import com.bcsd.community.controller.dto.response.MemberResponseDto;
 import com.bcsd.community.entity.Member;
 import com.bcsd.community.repository.MemberRepository;
 import com.bcsd.community.service.exception.EmailAlreadyExistsException;
+import com.bcsd.community.service.exception.UseremailNotFoundException;
 import com.bcsd.community.util.PasswordUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -54,6 +59,39 @@ public class MemberServiceImp implements MemberService {
         return memberRepository.findByEmail(request.email())
                 .filter(user -> PasswordUtils.verifyPassword(request.password(), user.getPassword(), user.getSalt()))
                 .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ArticleResponseDto> getArticles(String loginEmail) {
+        return memberRepository.findByEmail(loginEmail)
+                .map(Member::getArticles)
+                .orElseThrow(() -> new UseremailNotFoundException("유저 "+loginEmail+"을 찾을수 없습니다."))
+                .stream()
+                .map(ArticleResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BoardResponseDto> getBoards(String loginEmail) {
+        return memberRepository.findByEmail(loginEmail)
+                .map(Member::getBoards)
+                .orElseThrow(() -> new UseremailNotFoundException("유저 "+loginEmail+"을 찾을수 없습니다."))
+                .stream()
+                .map(BoardResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommentResponseDto> getComments(String loginEmail) {
+        return memberRepository.findByEmail(loginEmail)
+                .map(Member::getComments)
+                .orElseThrow(() -> new UseremailNotFoundException("유저 "+loginEmail+"을 찾을수 없습니다."))
+                .stream()
+                .map(CommentResponseDto::from)
+                .collect(Collectors.toList());
     }
 
     @Override

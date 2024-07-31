@@ -30,6 +30,8 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         if (e instanceof EmailAlreadyExistsException) {
             errors.put(e.getMessage(), "이미 가입된 이메일 입니다.");
+        } else {
+            errors.put("error", e.getMessage());
         }
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
