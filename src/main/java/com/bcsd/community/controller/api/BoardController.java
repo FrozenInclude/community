@@ -55,9 +55,6 @@ public class BoardController {
                                   HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (!Objects.equals(boardService.getAuthor(id).id(), loginUser.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다");
-        }
         return ResponseEntity.ok(boardService.edit(id, request));
     }
 
@@ -67,9 +64,6 @@ public class BoardController {
                                     HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (!Objects.equals(boardService.getAuthor(id).id(), loginUser.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다");
-        }
         boardService.delete(id);
         return ResponseEntity.noContent().build();
     }
