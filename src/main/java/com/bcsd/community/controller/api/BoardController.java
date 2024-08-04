@@ -46,9 +46,6 @@ public class BoardController {
             HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
-        }
         return ResponseEntity.ok(boardService.create(loginUser, request));
     }
 
@@ -58,13 +55,10 @@ public class BoardController {
                                   HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
-        }
         if (!Objects.equals(boardService.getAuthor(id).id(), loginUser.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다");
         }
-        return ResponseEntity.ok(boardService.edit(id,request));
+        return ResponseEntity.ok(boardService.edit(id, request));
     }
 
     @DeleteMapping("/{id}")
@@ -73,9 +67,6 @@ public class BoardController {
                                     HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
-        }
         if (!Objects.equals(boardService.getAuthor(id).id(), loginUser.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다");
         }

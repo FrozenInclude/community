@@ -32,18 +32,18 @@ public class MemberController {
             @RequestBody MemberLoginRequestDto request,
             HttpSession session
     ) {
-        Member existingUser = (Member) session.getAttribute("loginUser");
-        if (existingUser != null) {
+        Member loginUser = (Member) session.getAttribute("loginUser");
+        if (loginUser != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 로그인되어 있습니다");
         }
 
-        Member user = memberService.login(request);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 이메일 또는 비밀번호");
+        loginUser = memberService.login(request);
+        if (loginUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 이메일 또는 비밀번호 입니다.");
         }
 
-        session.setAttribute("loginUser", user);
-        return ResponseEntity.ok(user);
+        session.setAttribute("loginUser", loginUser);
+        return ResponseEntity.ok(loginUser);
     }
 
     @PutMapping
@@ -52,9 +52,6 @@ public class MemberController {
             HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
-        }
         loginUser.update(request);
         MemberResponseDto response = MemberResponseDto.from(loginUser);
         return ResponseEntity.ok(response);
@@ -65,9 +62,6 @@ public class MemberController {
             HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
-        }
         memberService.withDraw(loginUser.getEmail());
         return ResponseEntity.noContent().build();
     }
@@ -75,9 +69,6 @@ public class MemberController {
     @GetMapping
     public ResponseEntity<?> userInfo(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
-        }
         MemberResponseDto response = MemberResponseDto.from(loginUser);
         return ResponseEntity.ok(response);
     }
@@ -85,18 +76,12 @@ public class MemberController {
     @GetMapping("/articles")
     public ResponseEntity<?> getArticles(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
-        }
         return ResponseEntity.ok(memberService.getArticles(loginUser.getEmail()));
     }
 
     @GetMapping("/boards")
     public ResponseEntity<?> getBoards(HttpSession session) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되어 있지 않습니다");
-        }
         return ResponseEntity.ok(memberService.getBoards(loginUser.getEmail()));
     }
 }
