@@ -37,9 +37,7 @@ public class MemberServiceImp implements MemberService {
     @Transactional(readOnly = true)
     public List<MemberResponseDto> findAll() {
         List<Member> members = memberRepository.findAll();
-        return members.stream()
-                .map(MemberResponseDto::from)
-                .toList();
+        return MemberResponseDto.from_list(members);
     }
 
     @Override
@@ -64,34 +62,26 @@ public class MemberServiceImp implements MemberService {
     @Override
     @Transactional(readOnly = true)
     public List<ArticleResponseDto> getArticles(String loginEmail) {
-        return memberRepository.findByEmail(loginEmail)
-                .map(Member::getArticles)
-                .orElseThrow(() -> new UseremailNotFoundException("유저 "+loginEmail+"을 찾을수 없습니다."))
-                .stream()
-                .map(ArticleResponseDto::from)
-                .collect(Collectors.toList());
+        return ArticleResponseDto.from_list(memberRepository.findByEmail(loginEmail)
+                .orElseThrow(() -> new UseremailNotFoundException("유저 " + loginEmail + "을 찾을수 없습니다."))
+                .getArticles());
+
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BoardResponseDto> getBoards(String loginEmail) {
-        return memberRepository.findByEmail(loginEmail)
-                .map(Member::getBoards)
-                .orElseThrow(() -> new UseremailNotFoundException("유저 "+loginEmail+"을 찾을수 없습니다."))
-                .stream()
-                .map(BoardResponseDto::from)
-                .collect(Collectors.toList());
+        return BoardResponseDto.from_list(memberRepository.findByEmail(loginEmail)
+                .orElseThrow(() -> new UseremailNotFoundException("유저 " + loginEmail + "을 찾을수 없습니다."))
+                .getBoards());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getComments(String loginEmail) {
-        return memberRepository.findByEmail(loginEmail)
-                .map(Member::getComments)
-                .orElseThrow(() -> new UseremailNotFoundException("유저 "+loginEmail+"을 찾을수 없습니다."))
-                .stream()
-                .map(CommentResponseDto::from)
-                .collect(Collectors.toList());
+        return CommentResponseDto.from_list(memberRepository.findByEmail(loginEmail)
+                .orElseThrow(() -> new UseremailNotFoundException("유저 " + loginEmail + "을 찾을수 없습니다."))
+                .getComments());
     }
 
     @Override

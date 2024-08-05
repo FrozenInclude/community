@@ -16,8 +16,9 @@ public record ArticleResponseDto(
 ) {
     public static ArticleResponseDto from(Article article) {
         return new ArticleResponseDto(article.getId(), article.getTitle(),
-                article.getContent(),article.getMember().getUsername(),article.getCreatedAt(), article.getUpdatedAt());
+                article.getContent(), article.getMember().getUsername(), article.getCreatedAt(), article.getUpdatedAt());
     }
+
     public static List<ArticleResponseDto> from_list(List<Article> articles) {
         return articles.stream()
                 .map(ArticleResponseDto::from)

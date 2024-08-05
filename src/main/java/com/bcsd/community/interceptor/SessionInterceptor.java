@@ -1,6 +1,7 @@
 package com.bcsd.community.interceptor;
 
 import com.bcsd.community.entity.Member;
+import com.bcsd.community.service.ArticleService;
 import com.bcsd.community.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import java.util.Objects;
 public class SessionInterceptor implements HandlerInterceptor {
 
     private final BoardService boardService;
+    private final ArticleService articleService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -33,7 +35,7 @@ public class SessionInterceptor implements HandlerInterceptor {
             if (session == null || session.getAttribute("loginUser") == null) {
                 response.setContentType("text/plain; charset=UTF-8");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("로그인되어 있지 않습니다");
+                response.getWriter().write("로그인이 필요합니다");
                 return false;
             }
         }
@@ -63,17 +65,23 @@ public class SessionInterceptor implements HandlerInterceptor {
             }
 
             Member loginUser = (Member) session.getAttribute("loginUser");
+            String[] uriParts = requestURI.split("/");
 
             if (requestURI.startsWith("/api/board/")) {
-                String[] uriParts = requestURI.split("/");
-                if (uriParts.length > 2) {
-                    try {
-                        Long boardId = Long.parseLong(uriParts[uriParts.length - 1]);
-                        Long authorId = boardService.getAuthor(boardId).id();
-                        return Objects.equals(authorId, loginUser.getId());
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
+                try {
+                    Long boardId = Long.parseLong(uriParts[uriParts.length - 1]);
+                    Long authorId = boardService.getAuthor(boardId).id();
+                    return Objects.equals(authorId, loginUser.getId());
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            } else if (requestURI.startsWith("/api/article/")) {
+                try {
+                    Long articleId = Long.parseLong(uriParts[uriParts.length - 1]);
+                    Long authorId = articleService.getAuthor(articleId).id();
+                    return Objects.equals(authorId, loginUser.getId());
+                } catch (NumberFormatException e) {
+                    return false;
                 }
             }
         }

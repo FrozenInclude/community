@@ -36,9 +36,7 @@ public class BoardServiceImp implements BoardService {
     @Transactional(readOnly = true)
     public List<BoardResponseDto> findAll() {
         List<Board> boards = boardRepository.findAll();
-        return boards.stream()
-                .map(BoardResponseDto::from)
-                .toList();
+        return BoardResponseDto.from_list(boards);
     }
 
     @Override
@@ -72,12 +70,8 @@ public class BoardServiceImp implements BoardService {
     @Override
     @Transactional(readOnly = true)
     public List<ArticleResponseDto> getArticles(Long board_id) {
-        return boardRepository.findById(board_id)
-                .map(Board::getArticles)
-                .orElseThrow(BoardNotFoundException::new)
-                .stream()
-                .map(ArticleResponseDto::from)
-                .collect(Collectors.toList());
+        return ArticleResponseDto.from_list(boardRepository.findById(board_id)
+                .orElseThrow(BoardNotFoundException::new).getArticles());
     }
 
     @Override

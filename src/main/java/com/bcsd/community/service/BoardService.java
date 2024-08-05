@@ -11,10 +11,16 @@ import java.util.List;
 
 public interface BoardService {
     BoardResponseDto findById(Long board_id);
+
     List<BoardResponseDto> findAll();
+
     BoardResponseDto create(Member author, BoardCreateRequestDto request);
+
     BoardResponseDto edit(Long board_id, BoardUpdateRequestDto request);
+
     void delete(Long board_id);
+
     List<ArticleResponseDto> getArticles(Long board_id);
+
     MemberResponseDto getAuthor(Long board_id);
 }
