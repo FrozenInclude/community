@@ -2,6 +2,7 @@ package com.bcsd.community.controller.dto.request;
 
 import com.bcsd.community.entity.Article;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ public record ArticleWriteRequestDto(
         @NotBlank(message = "내용을 입력해주세요")
         String content,
 
-        @NotBlank(message = "게시판을 선택해 주세요")
+        @NotNull(message = "게시판을 선택해 주세요")
         Long boardId
 ) {
     public Article toEntity(){

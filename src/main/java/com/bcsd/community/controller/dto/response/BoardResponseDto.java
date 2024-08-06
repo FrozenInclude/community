@@ -14,13 +14,11 @@ public record BoardResponseDto(
         String description,
         String author,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        List<ArticleResponseDto> articles
+        LocalDateTime updatedAt
 ) {
     public static BoardResponseDto from(Board board) {
         return new BoardResponseDto(board.getId(), board.getBoardName(), board.getDescription(),
-                board.getAuthor().getUsername(), board.getCreatedAt(), board.getUpdatedAt(),
-                ArticleResponseDto.from_list(board.getArticles()));
+                board.getAuthor().getUsername(), board.getCreatedAt(), board.getUpdatedAt());
     }
 
     public static List<BoardResponseDto> from_list(List<Board> boards) {
