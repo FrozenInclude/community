@@ -62,7 +62,6 @@ public class ArticleController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id,
-                                    @Validated @RequestBody ArticleUpdateRequestDto request,
                                     HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");

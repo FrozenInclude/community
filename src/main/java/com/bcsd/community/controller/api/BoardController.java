@@ -60,7 +60,6 @@ public class BoardController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id,
-                                    @Validated @RequestBody BoardCreateRequestDto request,
                                     HttpSession session
     ) {
         Member loginUser = (Member) session.getAttribute("loginUser");

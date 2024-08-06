@@ -23,10 +23,6 @@ public class Comment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-
     @ManyToOne
     @JoinColumn(name="member_id")
     private Member commentAuthor;

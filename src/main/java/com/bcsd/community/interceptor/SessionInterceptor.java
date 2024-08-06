@@ -3,6 +3,7 @@ package com.bcsd.community.interceptor;
 import com.bcsd.community.entity.Member;
 import com.bcsd.community.service.ArticleService;
 import com.bcsd.community.service.BoardService;
+import com.bcsd.community.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +19,7 @@ public class SessionInterceptor implements HandlerInterceptor {
 
     private final BoardService boardService;
     private final ArticleService articleService;
+    private final CommentService commentService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -79,6 +81,14 @@ public class SessionInterceptor implements HandlerInterceptor {
                 try {
                     Long articleId = Long.parseLong(uriParts[uriParts.length - 1]);
                     Long authorId = articleService.getAuthor(articleId).id();
+                    return Objects.equals(authorId, loginUser.getId());
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            } else if (requestURI.startsWith("/api/comment/")) {
+                try {
+                    Long commentId = Long.parseLong(uriParts[uriParts.length - 1]);
+                    Long authorId = commentService.getAuthor(commentId).id();
                     return Objects.equals(authorId, loginUser.getId());
                 } catch (NumberFormatException e) {
                     return false;
