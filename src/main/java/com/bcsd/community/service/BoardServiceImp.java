@@ -69,13 +69,6 @@ public class BoardServiceImp implements BoardService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArticleResponseDto> getArticles(Long board_id) {
-        return ArticleResponseDto.from_list(boardRepository.findById(board_id)
-                .orElseThrow(BoardNotFoundException::new).getArticles());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public MemberResponseDto getAuthor(Long board_id) {
         return MemberResponseDto.from(boardRepository.findById(board_id)
                 .orElseThrow(BoardNotFoundException::new).getAuthor());

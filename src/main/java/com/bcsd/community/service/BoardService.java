@@ -20,7 +20,5 @@ public interface BoardService {
 
     void delete(Long board_id);
 
-    List<ArticleResponseDto> getArticles(Long board_id);
-
     MemberResponseDto getAuthor(Long board_id);
 }

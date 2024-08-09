@@ -9,12 +9,13 @@ import java.util.stream.Collectors;
 
 public record CommentResponseDto(
         Long id,
+        Long articleId,
         String content,
         String author,
         LocalDateTime createdAt
 ) {
     public static CommentResponseDto from(Comment comment) {
-        return new CommentResponseDto(comment.getId(), comment.getContent(),
+        return new CommentResponseDto(comment.getId(), comment.getClassArticle().getId(),comment.getContent(),
                 comment.getCommentAuthor().getUsername(), comment.getCreatedAt());
     }
 

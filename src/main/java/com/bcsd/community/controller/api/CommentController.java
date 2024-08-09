@@ -11,6 +11,7 @@ import com.bcsd.community.util.swaggerModel.CommentDtoList;
 import com.bcsd.community.util.swaggerModel.GenericErrorResponse;
 import com.bcsd.community.util.swaggerModel.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -54,8 +55,13 @@ public class CommentController {
                             schema = @Schema(implementation = GenericErrorResponse.class)))
     })
     @GetMapping
-    public ResponseEntity<?> getAllOnComment() {
-        return ResponseEntity.ok(commentService.findAll());
+    public ResponseEntity<?> getAllOnComment(@Parameter(description = "검색어(내용)") @RequestParam(required = false, value = "search") String search,
+                                             @Parameter(description = "작성자") @RequestParam(required = false, value = "author") String author,
+                                             @Parameter(description = "작성자 번호") @RequestParam(required = false, value = "authorId") Long authorId,
+                                             @Parameter(description = "게시글 번호") @RequestParam(required = false, value = "articleId") Long articleId,
+                                             @Parameter(description = "페이지 번호") @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+                                             @Parameter(description = "정렬 방향(기준:)") @RequestParam(required = false, defaultValue = "DESC", value = "sort") String sort) {
+        return ResponseEntity.ok(commentService.findAll(pageNo, sort, search, articleId, author, authorId));
     }
 
 
@@ -124,10 +130,7 @@ public class CommentController {
                             schema = @Schema(type = "string", example = "잘못된 접근입니다")))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOnComment(@PathVariable Long id,
-                                    HttpSession session
-    ) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
+    public ResponseEntity<?> deleteOnComment(@PathVariable Long id) {
         commentService.delete(id);
         return ResponseEntity.noContent().build();
     }

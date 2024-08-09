@@ -11,7 +11,7 @@ import java.util.List;
 public interface CommentService {
     CommentResponseDto findById(Long comment_id);
 
-    List<CommentResponseDto> findAll();
+    List<CommentResponseDto> findAll(int pageNo, String sort, String search, Long articleId, String author, Long authorId);
 
     CommentResponseDto write(Member author, CommentWriteRequestDto request);
 

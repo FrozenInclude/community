@@ -7,10 +7,13 @@ import com.bcsd.community.controller.dto.response.ArticleResponseDto;
 import com.bcsd.community.controller.dto.response.BoardResponseDto;
 import com.bcsd.community.controller.dto.response.MemberResponseDto;
 import com.bcsd.community.entity.Member;
+import com.bcsd.community.service.ArticleService;
+import com.bcsd.community.service.CommentService;
 import com.bcsd.community.service.MemberService;
 import com.bcsd.community.util.swaggerModel.GenericErrorResponse;
 import com.bcsd.community.util.swaggerModel.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,6 +33,8 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ArticleService articleService;
+    private  final CommentService commentService;
 
     @Operation(summary = "회원 가입", description = "회원을 등록합니다.")
     @ApiResponses(value = {
@@ -54,7 +59,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "응답 성공",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Member.class))),
+                            schema = @Schema(implementation = MemberResponseDto.class))),
             @ApiResponse(responseCode = "400 ", description = "예외 발생",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = GenericErrorResponse.class))),
@@ -84,7 +89,7 @@ public class MemberController {
         }
 
         session.setAttribute("loginUser", loginUser);
-        return ResponseEntity.ok(loginUser);
+        return ResponseEntity.ok(MemberResponseDto.from(loginUser));
     }
 
     @Operation(summary = "정보 수정", description = "회원 정보를 수정합니다.")
@@ -166,9 +171,15 @@ public class MemberController {
                             schema = @Schema(type = "string", example = "로그인이 필요합니다")))
     })
     @GetMapping("/articles")
-    public ResponseEntity<?> getArticles(HttpSession session) {
+    public ResponseEntity<?> getArticles(HttpSession session,
+                                         @Parameter(description = "검색어(제목+내용)") @RequestParam(required = false, value = "search") String search,
+                                         @Parameter(description = "작성자") @RequestParam(required = false, value = "author") String author,
+                                         @Parameter(description = "게시판 번호") @RequestParam(required = false, value = "authorId") Long boardId,
+                                         @Parameter(description = "페이지 번호") @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+                                         @Parameter(description = "정렬 기준") @RequestParam(required = false, defaultValue = "createdAt", value = "orderby") String criteria,
+                                         @Parameter(description = "정렬 방향") @RequestParam(required = false, defaultValue = "DESC", value = "sort") String sort) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        return ResponseEntity.ok(memberService.getArticles(loginUser.getEmail()));
+        return ResponseEntity.ok(articleService.findAll(pageNo, criteria, sort, search, author, loginUser.getId(), boardId));
     }
 
     @Operation(summary = "게시판 조회", description = "생성한 게시판을 조회합니다.")
@@ -202,9 +213,33 @@ public class MemberController {
                             schema = @Schema(type = "string", example = "로그인이 필요합니다")))
     })
     @GetMapping("/comments")
-    public ResponseEntity<?> getComments(HttpSession session) {
+    public ResponseEntity<?> getComments(HttpSession session,
+                                         @Parameter(description = "검색어(내용)") @RequestParam(required = false, value = "search") String search,
+                                         @Parameter(description = "게시글 번호") @RequestParam(required = false, value = "articleId") Long articleId,
+                                         @Parameter(description = "페이지 번호") @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+                                         @Parameter(description = "정렬 방향(기준:)") @RequestParam(required = false, defaultValue = "DESC", value = "sort") String sort) {
         Member loginUser = (Member) session.getAttribute("loginUser");
-        return ResponseEntity.ok(memberService.getComments(loginUser.getEmail()));
+        return ResponseEntity.ok(commentService.findAll(pageNo, sort, search, articleId,null, loginUser.getId()));
     }
+
+    @Operation(summary = "로그아웃", description = "현재 로그인된 세션을 종료합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(type = "string", example = "로그아웃 성공"))),
+            @ApiResponse(responseCode = "401", description = "로그인 정보 없음",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(type = "string", example = "로그인이 필요합니다")))
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) {
+        if (session.getAttribute("loginUser") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("로그인이 필요합니다");
+        }
+        session.invalidate();
+        return ResponseEntity.ok("로그아웃 성공");
+    }
+
 }
 

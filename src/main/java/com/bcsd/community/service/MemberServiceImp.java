@@ -53,6 +53,10 @@ public class MemberServiceImp implements MemberService {
                 .ifPresent(email -> {
                     throw new AlreadyExistsException("email");
                 });
+        memberRepository.findByUsername(request.username())
+                .ifPresent(email -> {
+                    throw new AlreadyExistsException("username");
+                });
         Member member = memberRepository.save(request.toEntity());
         return MemberResponseDto.from(member);
     }
@@ -65,14 +69,6 @@ public class MemberServiceImp implements MemberService {
                 .orElse(null);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ArticleResponseDto> getArticles(String loginEmail) {
-        return ArticleResponseDto.from_list(memberRepository.findByEmail(loginEmail)
-                .orElseThrow(() -> new UseremailNotFoundException("유저 " + loginEmail + "을 찾을수 없습니다."))
-                .getArticles());
-
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -80,14 +76,6 @@ public class MemberServiceImp implements MemberService {
         return BoardResponseDto.from_list(memberRepository.findByEmail(loginEmail)
                 .orElseThrow(() -> new UseremailNotFoundException("유저 " + loginEmail + "을 찾을수 없습니다."))
                 .getBoards());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CommentResponseDto> getComments(String loginEmail) {
-        return CommentResponseDto.from_list(memberRepository.findByEmail(loginEmail)
-                .orElseThrow(() -> new UseremailNotFoundException("유저 " + loginEmail + "을 찾을수 없습니다."))
-                .getComments());
     }
 
     @Override

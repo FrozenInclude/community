@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public record ArticleResponseDto(
         Long id,
+        Long boardId,
         String title,
         String content,
         String author,
@@ -15,7 +16,7 @@ public record ArticleResponseDto(
         LocalDateTime updatedAt
 ) {
     public static ArticleResponseDto from(Article article) {
-        return new ArticleResponseDto(article.getId(), article.getTitle(),
+        return new ArticleResponseDto(article.getId(),article.getBoard().getId(),article.getTitle(),
                 article.getContent(), article.getMember().getUsername(), article.getCreatedAt(), article.getUpdatedAt());
     }
 

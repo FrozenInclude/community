@@ -20,9 +20,5 @@ public interface MemberService {
 
     public void withDraw(String loginEmail);
 
-    public List<ArticleResponseDto> getArticles(String email);
-
     public List<BoardResponseDto> getBoards(String email);
-
-    public List<CommentResponseDto> getComments(String email);
 }

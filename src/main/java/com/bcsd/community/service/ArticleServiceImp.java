@@ -13,11 +13,18 @@ import com.bcsd.community.repository.ArticleRepository;
 import com.bcsd.community.repository.BoardRepository;
 import com.bcsd.community.service.exception.ArticleNotFoundException;
 import com.bcsd.community.service.exception.BoardNotFoundException;
+import com.bcsd.community.util.ArticleSpecification;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.LongFunction;
 
 @Service
 @AllArgsConstructor
@@ -36,15 +43,24 @@ public class ArticleServiceImp implements ArticleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ArticleResponseDto> findAll() {
-        List<Article> articles = articleRepository.findAll();
-        return ArticleResponseDto.from_list(articles);
+    public List<ArticleResponseDto> findAll(int pageNo, String criteria, String sort, String search, String author, Long authorId,
+                                            Long boardId) {
+        Pageable pageable = (sort.equalsIgnoreCase("asc")) ?
+                PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.ASC, criteria))
+                : PageRequest.of(pageNo, 10, Sort.by(Sort.Direction.DESC, criteria));
+
+        Specification<Article> spec = ArticleSpecification.hasKeywordInTitleOrContent(search)
+                .and(ArticleSpecification.hasAuthor(author))
+                .and(ArticleSpecification.hasBoardId(boardId))
+                .and(ArticleSpecification.hasMemberId(authorId));
+
+        return articleRepository.findAll(spec, pageable).map(ArticleResponseDto::from).getContent();
     }
 
     @Override
     @Transactional
     public ArticleResponseDto write(Member author, ArticleWriteRequestDto request) {
-        Article article=request.toEntity();
+        Article article = request.toEntity();
         article.setBoard(boardRepository.findById(request.boardId())
                 .orElseThrow(BoardNotFoundException::new));
         article.setMember(author);
@@ -53,39 +69,29 @@ public class ArticleServiceImp implements ArticleService {
 
     @Override
     @Transactional
-    public ArticleResponseDto edit(Long article_id, ArticleUpdateRequestDto request)
-    {
-        Article article=articleRepository.findById(article_id).orElseThrow(ArticleNotFoundException::new);
+    public ArticleResponseDto edit(Long article_id, ArticleUpdateRequestDto request) {
+        Article article = articleRepository.findById(article_id).orElseThrow(ArticleNotFoundException::new);
         article.update(request);
         return ArticleResponseDto.from(article);
     }
 
     @Override
     @Transactional
-    public void delete(Long article_id)
-    {
-        Article article=articleRepository.findById(article_id)
+    public void delete(Long article_id) {
+        Article article = articleRepository.findById(article_id)
                 .orElseThrow(ArticleNotFoundException::new);
         articleRepository.delete(article);
     }
 
-    @Override
-    public List<CommentResponseDto> getComments(Long article_id)
-    {
-        return CommentResponseDto.from_list(articleRepository.findById(article_id)
-                .orElseThrow(ArticleNotFoundException::new).getComments());
-    }
 
     @Override
-    public MemberResponseDto getAuthor(Long article_id)
-    {
+    public MemberResponseDto getAuthor(Long article_id) {
         return MemberResponseDto.from(articleRepository.findById(article_id)
                 .orElseThrow(ArticleNotFoundException::new).getMember());
     }
 
     @Override
-    public BoardResponseDto getBoard(Long article_id)
-    {
+    public BoardResponseDto getBoard(Long article_id) {
         return BoardResponseDto.from(articleRepository.findById(article_id)
                 .orElseThrow(ArticleNotFoundException::new).getBoard());
     }

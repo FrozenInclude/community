@@ -31,21 +31,4 @@ public class PasswordUtils {
             return null;
         }
     }
-
-    /*
-    테스트 코드
-    public static void main(String[] args) {
-        try {
-            String password = "mySecretPassword";
-            String salt = generateSalt();
-            String hashedPassword = hashPasswordWithSalt(password, salt);
-
-            System.out.println("원래 비밀번호: " + password);
-            System.out.println("생성된 솔트: " + salt);
-            System.out.println("해시된 비밀번호: " + hashedPassword);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
-     */
 }
