@@ -16,4 +16,10 @@ public class DocumentViewController {
         return new RedirectView("document");
     }
 
+    @GetMapping
+    public RedirectView redirectToDocument3() {
+        return new RedirectView("/login");
+    }
+    
+
 }
