@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원정보 수정</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            background-color: #3897f0;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #357ae8;
+        }
+
+        p.error {
+            color: red;
+            margin-top: 0;
+            font-size: 12px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        a {
+            color: #3897f0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<form method="post" th:action="@{/updateProfile}">
+    <h2>회원정보 수정</h2>
+
+    <label for="username">새 이름</label>
+    <input type="text" id="username" name="username" placeholder="비어있을시 변경없음">
+    <p th:if="${error != null and error['username'] != null}" class="error" th:text="${error['username']}"></p>
+
+
+    <label for="password">새 비밀번호</label>
+    <input type="password" id="password" name="password" placeholder="비어있을시 변경없음">
+    <p th:if="${error != null and error['password'] != null}" class="error" th:text="${error['password']}"></p>
+
+    <label for="confirmPassword">기존 비밀번호 확인</label>
+    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="기존 비밀번호 확인">
+    <p th:if="${error != null and error['confirm_password'] != null}" class="error"
+       th:text="${error['confirm_password']}"></p>
+
+    <button type="submit">수정하기</button>
+</form>
+</body>
+</html>

@@ -135,7 +135,7 @@ public class BoardController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(type = "string", example = "잘못된 접근입니다")))
     })
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<?> editOnBoard(@PathVariable Long id,
                                          @Validated @RequestBody BoardUpdateRequestDto request
     ) {

@@ -154,7 +154,7 @@ public class ArticleController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(type = "string", example = "잘못된 접근입니다")))
     })
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<?> editOnArticle(@PathVariable Long id,
                                            @Validated @RequestBody ArticleUpdateRequestDto request) {
         return ResponseEntity.ok(articleService.edit(id, request));

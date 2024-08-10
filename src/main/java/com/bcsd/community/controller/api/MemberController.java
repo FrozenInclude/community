@@ -10,6 +10,7 @@ import com.bcsd.community.entity.Member;
 import com.bcsd.community.service.ArticleService;
 import com.bcsd.community.service.CommentService;
 import com.bcsd.community.service.MemberService;
+import com.bcsd.community.util.PasswordUtils;
 import com.bcsd.community.util.swaggerModel.GenericErrorResponse;
 import com.bcsd.community.util.swaggerModel.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,13 +21,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/member")
 @Tag(name = "Member api", description = "회원과 관련된 엔드포인트를 제공합니다. 회원 정보는 세션을 통해 관리됩니다.")
@@ -34,7 +36,8 @@ public class MemberController {
 
     private final MemberService memberService;
     private final ArticleService articleService;
-    private  final CommentService commentService;
+    private final CommentService commentService;
+    private Member loginUser;
 
     @Operation(summary = "회원 가입", description = "회원을 등록합니다.")
     @ApiResponses(value = {
@@ -78,12 +81,14 @@ public class MemberController {
             @RequestBody MemberLoginRequestDto request,
             HttpSession session
     ) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
+        loginUser = (Member) session.getAttribute("loginUser");
+
         if (loginUser != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("이미 로그인되어 있습니다");
         }
 
         loginUser = memberService.login(request);
+
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 이메일 또는 비밀번호 입니다.");
         }
@@ -105,17 +110,20 @@ public class MemberController {
                             schema = @Schema(implementation = ValidationErrorResponse.class))),
             @ApiResponse(responseCode = "401", description = "로그인 정보 없음",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(type = "string", example = "로그인이 필요합니다")))
+                            schema = @Schema(type = "string", example = "로그인이 필요합니다"))),
+            @ApiResponse(responseCode = "401 ", description = "비밀번호 확인 불일치",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(type = "string", example = "비밀번호가 맞지 않습니다!")))
     })
     @PutMapping
-    public ResponseEntity<?> updateMember(
-            @Validated @RequestBody MemberUpdateRequestDto request,
-            HttpSession session
-    ) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
+    public ResponseEntity<?> updateMember(@Validated @RequestBody MemberUpdateRequestDto request,HttpSession httpSession) {
+        if (!PasswordUtils.verifyPassword(request.confirm_password(), loginUser.getPassword(), loginUser.getSalt())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 맞지 않습니다!");
+        }
+        memberService.edit(loginUser.getEmail(), request);
         loginUser.update(request);
-        MemberResponseDto response = MemberResponseDto.from(loginUser);
-        return ResponseEntity.ok(response);
+        httpSession.setAttribute("loginUser", loginUser);
+        return ResponseEntity.ok(memberService.edit(loginUser.getEmail(), request));
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원을 탈퇴 합니다.")
@@ -131,10 +139,7 @@ public class MemberController {
                             schema = @Schema(type = "string", example = "로그인이 필요합니다")))
     })
     @DeleteMapping
-    public ResponseEntity<?> withdrawMember(
-            HttpSession session
-    ) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
+    public ResponseEntity<?> withdrawMember() {
         memberService.withDraw(loginUser.getEmail());
         return ResponseEntity.noContent().build();
     }
@@ -171,14 +176,12 @@ public class MemberController {
                             schema = @Schema(type = "string", example = "로그인이 필요합니다")))
     })
     @GetMapping("/articles")
-    public ResponseEntity<?> getArticles(HttpSession session,
-                                         @Parameter(description = "검색어(제목+내용)") @RequestParam(required = false, value = "search") String search,
+    public ResponseEntity<?> getArticles(@Parameter(description = "검색어(제목+내용)") @RequestParam(required = false, value = "search") String search,
                                          @Parameter(description = "작성자") @RequestParam(required = false, value = "author") String author,
                                          @Parameter(description = "게시판 번호") @RequestParam(required = false, value = "authorId") Long boardId,
                                          @Parameter(description = "페이지 번호") @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
                                          @Parameter(description = "정렬 기준") @RequestParam(required = false, defaultValue = "createdAt", value = "orderby") String criteria,
                                          @Parameter(description = "정렬 방향") @RequestParam(required = false, defaultValue = "DESC", value = "sort") String sort) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
         return ResponseEntity.ok(articleService.findAll(pageNo, criteria, sort, search, author, loginUser.getId(), boardId));
     }
 
@@ -195,8 +198,7 @@ public class MemberController {
                             schema = @Schema(type = "string", example = "로그인이 필요합니다")))
     })
     @GetMapping("/boards")
-    public ResponseEntity<?> getBoards(HttpSession session) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
+    public ResponseEntity<?> getBoards() {
         return ResponseEntity.ok(memberService.getBoards(loginUser.getEmail()));
     }
 
@@ -213,13 +215,11 @@ public class MemberController {
                             schema = @Schema(type = "string", example = "로그인이 필요합니다")))
     })
     @GetMapping("/comments")
-    public ResponseEntity<?> getComments(HttpSession session,
-                                         @Parameter(description = "검색어(내용)") @RequestParam(required = false, value = "search") String search,
+    public ResponseEntity<?> getComments(@Parameter(description = "검색어(내용)") @RequestParam(required = false, value = "search") String search,
                                          @Parameter(description = "게시글 번호") @RequestParam(required = false, value = "articleId") Long articleId,
                                          @Parameter(description = "페이지 번호") @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
                                          @Parameter(description = "정렬 방향(기준:)") @RequestParam(required = false, defaultValue = "DESC", value = "sort") String sort) {
-        Member loginUser = (Member) session.getAttribute("loginUser");
-        return ResponseEntity.ok(commentService.findAll(pageNo, sort, search, articleId,null, loginUser.getId()));
+        return ResponseEntity.ok(commentService.findAll(pageNo, sort, search, articleId, null, loginUser.getId()));
     }
 
     @Operation(summary = "로그아웃", description = "현재 로그인된 세션을 종료합니다.")
@@ -238,6 +238,7 @@ public class MemberController {
                     .body("로그인이 필요합니다");
         }
         session.invalidate();
+        loginUser = null;
         return ResponseEntity.ok("로그아웃 성공");
     }
 

@@ -72,6 +72,10 @@
     <p><strong>회원가입일:</strong> <span th:text="${joinDate}"></span></p>
 
     <div class="button-group">
+        <form th:action="@{/updateProfile}" method="get">
+            <button type="submit">수정</button>
+        </form>
+
         <form th:action="@{/logout}" method="post">
             <button type="submit">로그아웃</button>
         </form>
