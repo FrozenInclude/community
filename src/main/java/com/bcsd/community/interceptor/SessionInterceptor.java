@@ -61,7 +61,7 @@ public class SessionInterceptor implements HandlerInterceptor {
 
         if ("GET".equalsIgnoreCase(method)) {
             return true;
-        } else if ("PATCH".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method)) {
+        } else if ("PUT".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method)) {
             if (session == null || session.getAttribute("loginUser") == null) {
                 return false;
             }

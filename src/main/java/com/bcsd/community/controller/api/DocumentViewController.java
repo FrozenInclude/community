@@ -11,5 +11,9 @@ public class DocumentViewController {
     public RedirectView redirectToDocument() {
         return new RedirectView("/document/document");
     }
+    @GetMapping("/document/")
+    public RedirectView redirectToDocument2() {
+        return new RedirectView("document");
+    }
 
 }
